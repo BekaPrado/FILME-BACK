@@ -21,69 +21,63 @@
  *          Após essa configuração voce deverá rodar o seguinte comando:
  *                      npx prisma migrate dev
  **************************************************************************************************************************/
-    //Import das bibliotecas para configurar a API
-     const express        = require('express')
-     const cors           = require('cors')
-     const bodyParser     = require('body-parser')
-     
-     //Manipular o body da requisição para chegar apenas JSON
-     const bodyParserJSON = bodyParser.json()
+    // Importação das bibliotecas
+const express = require('express')
+const cors = require('cors')
+const bodyParser = require('body-parser')
 
-     //Cria o objeto app com referências do express para criar a API
-     const app = express()
-     
-     //response - Significa a resposta da API
-     //request - Significa a chegada de dados na API
-     
-     app.use((request, response, next) =>{
-         response.header('Access-Control-Allow-Origin', '*')
-
-         response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-     
-         app.use(cors()) //Aplica/ATIVA as restrições do CORS da requisição
-     
-         next()
-     })
-     
-//Permissão de quais metodos a API irá responder - CORS CUIDA DESSAS PERMISSÕES ---VERBOS HTTP
-//get - pegar dados da API na tela
-//post - inserir novos itens e salvar 
-//put - alterar dados existentes na api
-//delete - excluir item existente na API
-//options - 
-
-//____________________________________________________________________________________________________________________________________________________________
-
+// Importação do controller
 const controllerFilme = require('./controller/filme/controllerFilme')
-const { Param } = require('@prisma/client/runtime/library')
 
+// Criação do app Express
+const app = express()
 
-app.post('/v1/controle-filmes/filme', cors(), bodyParserJSON, async function (request, response){
+// Middlewares globais
+app.use(cors()) // Libera o CORS para todas as rotas
+app.use(bodyParser.json()) // Permite receber JSON no body
 
-    //Recebe o content type da requisição
-    let contentType = request.headers['content-type']
+// Rotas da API
 
-    //Recebe o body da requisição os dados encaminhados
-    let  dadosBody = request.body
-    let resusltFilme = await controllerFilme.inserirFilme(dadosBody, contentType)
+// Inserir um novo filme
+app.post('/v1/controle-filmes/filme', async (request, response) => {
+    const contentType = request.headers['content-type']
+    const dadosBody = request.body
 
-    response.status(resultFilme.status_code)
-    response.json(resultFilme)
-
+    const resultFilme = await controllerFilme.inserirFilme(dadosBody, contentType)
+    response.status(resultFilme.status_code).json(resultFilme)
 })
 
-app.get('/v1/controle-filmes/filme', cors(),async function(request, response){
-    //Chama a funcao para retornar os filmes
-    let resultFilme = await controllerFilme.listarFilme()
-
-    response.status(resultFilme.status_code)
-    response.json(resultFilme)
-} )
-
-
-app.get('/v1/controle-filmes/id')
-
-app.listen('5050', function(){
-    console.log('API funcionando e aguardando requisições .....................................')
+// Listar todos os filmes
+app.get('/v1/controle-filmes/filme', async (request, response) => {
+    const resultFilme = await controllerFilme.listarFilme()
+    response.status(resultFilme.status_code).json(resultFilme)
 })
 
+// Buscar filme por ID
+app.get('/v1/controle-filmes/filme/:id', async (request, response) => {
+    const idFilme = request.params.id
+    const resultFilme = await controllerFilme.buscarFilme(idFilme)
+    response.status(resultFilme.status_code).json(resultFilme)
+})
+
+// Excluir filme por ID
+app.delete('/v1/controle-filmes/filme/:id', async (request, response) => {
+    const idFilme = request.params.id
+    const resultFilme = await controllerFilme.excluirFilme(idFilme)
+    response.status(resultFilme.status_code).json(resultFilme)
+})
+
+// Atualizar filme por ID
+app.put('/v1/controle-filmes/filme/:id', async (request, response) => {
+    const contentType = request.headers['content-type']
+    const idFilme = request.params.id
+    const dadosBody = request.body
+
+    const resultFilme = await controllerFilme.atualizarFilme(idFilme, dadosBody, contentType)
+    response.status(resultFilme.status_code).json(resultFilme)
+})
+
+// Inicializa o servidor
+app.listen(8080, () => {
+    console.log('✅ API funcionando e aguardando requisições na porta 8080...')
+})

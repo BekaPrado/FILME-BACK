@@ -13,6 +13,9 @@ const { PrismaClient } = require('@prisma/client')
 
 //Objeto tipo JSON
 //Funcao para inserir um novo filme
+
+//------------------------------------------------------
+
 const insertFilme = async function(filme){
 
     try {
@@ -49,6 +52,9 @@ const insertFilme = async function(filme){
 
 }
 
+//------------------------------------------------------
+
+
 //funcao para atualizar um filme existente
 const updateFilme= async function(filme){
     try {
@@ -58,8 +64,7 @@ const updateFilme= async function(filme){
                                         data_lancamento = '${filme.data_lancamento}',
                                         foto_capa = '${filme.foto_capa}',
                                         link_trailer = '${filme.link_trailer}'
-                                    where id = ${filme.id}
-                                        `
+                                    where id = ${filme.id} `
 
         let resultFilme = await prisma.$executeRawUnsafe(sql)
 
@@ -74,6 +79,9 @@ const updateFilme= async function(filme){
 
 
 }
+
+//------------------------------------------------------
+
 
 //funcao para excluir um filme existente
 const deleteFilme=async function (id) {
@@ -90,6 +98,9 @@ const deleteFilme=async function (id) {
         return false
     }
 }
+
+//------------------------------------------------------
+
 //Funcao para retornar todos os filmes existentes
 const selectAllFilme = async function () {
  
@@ -109,6 +120,8 @@ const selectAllFilme = async function () {
     }
 }
 
+//------------------------------------------------------
+
 //funco para buscar um filme pelo id
 const selectByIdFilme=async function (id) {
     try {
@@ -125,6 +138,8 @@ const selectByIdFilme=async function (id) {
         return false
     }
 }
+
+//------------------------------------------------------
 
 //*UM SELECT PARA CADA FUNCTION*
 

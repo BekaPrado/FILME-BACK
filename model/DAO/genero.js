@@ -4,6 +4,8 @@
  * AUTOR: Rebeka 
  * Versão: 1.0
  **************************************************************************************************************************/
+//SITUAÇÃO DO CRUD DA TABELA: OK;
+
 //Import da biblioteca do prisma client para executar os scripts SQL
 const { PrismaClient } = require('@prisma/client')
         
@@ -11,89 +13,121 @@ const { PrismaClient } = require('@prisma/client')
     const prisma = new PrismaClient()
 
 
-//Objeto tipo JSON
-//Funcao para inserir um novo filme
+//--------------------------------------------------
 
 const insertGenero = async function(genero) {
     try {
-        let sql = `INSERT INTO tb_genero (nome) VALUES ('${genero.nome}')`;
-        let result = await prisma.$executeRawUnsafe(sql);
-        return result ? true : false;
+        let sql = `INSERT INTO tb_genero (
+                                    nome) 
+
+                                    values
+                                    (
+                                    '${genero.nome}'
+                                    )`;
+//pedindo para o prisma executar a variavel no my sql
+//executa o script sql no banco de dados e aguarda o retorno do BD para saber se deu certo
+
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        return result ? true : false
     } catch (error) {
-        console.error('Erro ao inserir gênero:', error);
-        return false;
+
+        console.error('Erro ao inserir gênero:', error)
+        return false
     }
 };
+
+//--------------------------------------------------
+
 
 const updateGenero = async function(genero) {
     try {
-        let sql = `UPDATE tb_genero SET nome = '${genero.nome}' WHERE id = ${genero.id}`;
-        let result = await prisma.$executeRawUnsafe(sql);
-        return result ? true : false;
+        let sql = `update tb_genero set nome = '${genero.nome}' 
+                                    where id = ${genero.id}`
+
+        let resultGenero = await prisma.$executeRawUnsafe(sql)
+        
+        if(resultGenero){
+            return true
+        }else{
+            return false
+        }
     } catch (error) {
-        console.error('Erro ao atualizar gênero:', error);
-        return false;
+        return false
     }
 };
 
+//--------------------------------------------------
+
 const deleteGenero = async function(id) {
     try {
-        // Primeiro verifica se existem filmes associados a este gênero
+        //verifica se o genero ja foi registrado a um filme
         const filmes = await prisma.$queryRawUnsafe(
-            `SELECT * FROM filme_genero WHERE tb_genero_id = ${id}`
+            `select * from filme_genero where tb_genero_id = ${id}`
         );
         
         if (filmes && filmes.length > 0) {
             throw new Error('Não é possível excluir: existem filmes associados a este gênero');
         }
+        //
+        let sql = `delete from tb_genero where id = ${id}`
 
-        let sql = `DELETE FROM tb_genero WHERE id = ${id}`;
-        let result = await prisma.$executeRawUnsafe(sql);
-        return result ? true : false;
+        let result = await prisma.$executeRawUnsafe(sql)
+
+
+        if (result)
+            return true
+        else
+            return false
+
     } catch (error) {
-        console.error('Erro ao excluir gênero:', error.message);
-        return false;
+        return false
     }
 };
+
+//--------------------------------------------------
 
 const selectAllGeneros = async function() {
     try {
-        let sql = 'SELECT * FROM tb_genero ORDER BY nome ASC';
-        let result = await prisma.$queryRawUnsafe(sql);
-        return result || [];
+        let sql = 'select * from tb_genero order by nome asc'
+
+        let result = await prisma.$queryRawUnsafe(sql)
+
+
+        if(result)
+            return result
+        else
+            return false
     } catch (error) {
-        console.error('Erro ao buscar gêneros:', error);
-        return [];
+        return false
     }
 };
+
+//--------------------------------------------------
 
 const selectByIdGenero = async function(id) {
     try {
-        let sql = `SELECT * FROM tb_genero WHERE id = ${id}`;
-        let result = await prisma.$queryRawUnsafe(sql);
-        return result.length > 0 ? result[0] : null;
+        let sql = `select * from tb_genero where id = ${id}`
+
+        let result = await prisma.$queryRawUnsafe(sql)
+
+
+        if (result)
+            return result 
+        else
+            return false
+
     } catch (error) {
-        console.error('Erro ao buscar gênero por ID:', error);
-        return null;
+        return false
     }
 };
 
-const selectByNomeGenero = async function(nome) {
-    try {
-        let sql = `SELECT * FROM tb_genero WHERE nome LIKE '%${nome}%'`;
-        let result = await prisma.$queryRawUnsafe(sql);
-        return result || [];
-    } catch (error) {
-        console.error('Erro ao buscar gênero por nome:', error);
-        return [];
-    }
-};
+//--------------------------------------------------
 
 module.exports = {
     insertGenero,
     updateGenero,
     deleteGenero,
     selectAllGeneros,
-    selectByIdGenero,
-    selectByNomeGenero
+    selectByIdGenero
 };

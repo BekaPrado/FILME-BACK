@@ -14,8 +14,13 @@ const { PrismaClient } = require('@prisma/client')
 //Objeto tipo JSON
 const insertPais = async function(pais) {
     try {
-        let sql = `insert into tb_pais (nome)
-                   values ('${pais.nome}')`
+        let sql = `insert into tb_pais (
+                                        nome
+                                        )
+                                        values 
+                                        (
+                                        '${pais.nome}'
+                                        )`
         
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -27,6 +32,9 @@ const insertPais = async function(pais) {
         return false
     }
 }
+
+//------------------------------------------------------
+
 
 const updatePais = async function(pais) {
     try {
@@ -46,6 +54,8 @@ const updatePais = async function(pais) {
     }
 }
 
+//------------------------------------------------------
+
 const deletePais = async function(id) {
     try {
         let sql = `delete from tb_pais where id = ${id}`
@@ -59,6 +69,8 @@ const deletePais = async function(id) {
         return false
     }
 }
+
+//------------------------------------------------------
 
 const selectAllPais = async function() {
     try {
@@ -74,6 +86,8 @@ const selectAllPais = async function() {
     }
 }
 
+//------------------------------------------------------
+
 const selectByIdPais = async function(id) {
     try {
         let sql = `select * from tb_pais where id = ${id}`
@@ -88,6 +102,9 @@ const selectByIdPais = async function(id) {
     }
 }
 
+//------------------------------------------------------
+
+
 const selectByNomePais = async function(nome) {
     try {
         let sql = `select * from tb_pais where nome like '%${nome}%'`
@@ -101,6 +118,9 @@ const selectByNomePais = async function(nome) {
         return false
     }
 }
+
+//------------------------------------------------------
+
 
 module.exports = {
     insertPais,
